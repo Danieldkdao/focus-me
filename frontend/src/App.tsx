@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 
 function App() {
   const [message, setMessage] = useState("Ready");
@@ -60,11 +59,11 @@ function App() {
 
       <p>{message}</p>
 
-      <button type="button" onClick={changePageColor}>
+      <button type="button" className="bg-blue-400" onClick={changePageColor}>
         Change page color
       </button>
 
-      <button type="button" onClick={resetPageColor}>
+      <button type="button" className="bg-red-400" onClick={resetPageColor}>
         Reset page color
       </button>
     </main>
