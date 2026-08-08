@@ -1,0 +1,14 @@
+{
+  "name": "@focus-me/extension",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check-types": "tsc -b --pretty false",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "preview": "vite preview"
+  }
+}

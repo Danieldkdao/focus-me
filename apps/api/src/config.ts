@@ -8,6 +8,7 @@ export const env = createEnv({
       .default("8000")
       .transform((s) => parseInt(s))
       .pipe(z.number()),
+    DATABASE_URL: z.string().min(1),
   },
   isServer: true,
   runtimeEnv: process.env,

@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
-import cssText from "./index.css?inline";
+import cssText from "../index.css?inline";
 import outfitFontUrl from "@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?inline";
-import { BlockedDialog } from "./components/blocked-dialog";
+import { BlockedDialog } from "@/components/blocked-dialog";
 
 const fontStyle = document.createElement("style");
 fontStyle.id = "focus-me-font";

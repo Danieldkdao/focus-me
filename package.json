@@ -1,0 +1,23 @@
+{
+  "name": "focus-me",
+  "private": true,
+  "packageManager": "pnpm@11.1.3",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+
+    "dev:web": "turbo run dev --filter=@focus-me/web",
+    "dev:api": "turbo run dev --filter=@focus-me/api",
+    "dev:extension": "turbo run dev --filter=@focus-me/extension",
+
+    "db:generate": "pnpm --filter @focus-me/api db:generate",
+    "db:migrate": "pnpm --filter @focus-me/api db:migrate",
+    "db:studio": "pnpm --filter @focus-me/api db:studio"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
+}
