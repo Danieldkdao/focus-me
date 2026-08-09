@@ -1,1 +1,1 @@
-export * from "./schemas/random.js";
+export * from "./schemas/domain.js";
