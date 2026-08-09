@@ -10,12 +10,15 @@
     "test": "turbo run test",
 
     "dev:web": "turbo run dev --filter=@focus-me/web",
-    "dev:api": "turbo run dev --filter=@focus-me/api",
     "dev:extension": "turbo run dev --filter=@focus-me/extension",
 
-    "db:generate": "pnpm --filter @focus-me/api db:generate",
-    "db:migrate": "pnpm --filter @focus-me/api db:migrate",
-    "db:studio": "pnpm --filter @focus-me/api db:studio"
+    "build:web": "turbo run build --filter=@focus-me/web",
+    "build:extension": "turbo run build --filter=@focus-me/extension",
+
+    "db:push": "pnpm --filter @focus-me/db db:push",
+    "db:generate": "pnpm --filter @focus-me/db db:generate",
+    "db:migrate": "pnpm --filter @focus-me/db db:migrate",
+    "db:studio": "pnpm --filter @focus-me/db db:studio"
   },
   "devDependencies": {
     "turbo": "latest"
