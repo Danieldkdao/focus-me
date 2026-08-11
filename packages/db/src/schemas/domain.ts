@@ -4,6 +4,7 @@ import { domainStatusEnum } from "../shared.js";
 
 export const DomainTable = pgTable("domains", {
   id,
+  // todo: add user id
   domain: text("domain").notNull(),
   status: domainStatusEnum("status").notNull(),
   selfNote: text("self_note"),
