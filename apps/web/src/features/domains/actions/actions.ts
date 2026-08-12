@@ -12,6 +12,25 @@ import {
   insertDomainDb,
   updateDomainDb,
 } from "../server/domains";
+import { UnwrapAsync } from "@/lib/types";
+import { db } from "@/db/db";
+import { DomainTable } from "@focus-me/db";
+import { cacheTag } from "next/cache";
+import { getGlobalDomainTag } from "../server/cache/domains";
+
+const readCachedDomainsAction = async () => {
+  "use cache";
+  // todo: user scope this later
+  cacheTag(getGlobalDomainTag());
+  const domains = await db.select().from(DomainTable);
+
+  return domains;
+};
+export const readDomainsAction = async () => {
+  // todo: add authentication
+  return readCachedDomainsAction();
+};
+export type ReadDomainsActionRes = UnwrapAsync<typeof readDomainsAction>;
 
 export const createDomainAction = async (unsafeData: DomainSchemaType) => {
   const { success, data } = domainSchema.safeParse(unsafeData);
