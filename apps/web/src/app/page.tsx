@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { DomainDialog } from "@/features/domains/components/domain-dialog";
+import { DomainsListView } from "@/features/domains/components/domains-list-view";
 
 const HomePage = () => {
   return (
-    <div>
-      <Button>Here is a button</Button>
-      Here is the home page
+    <div className="p-5">
+      <DomainDialog>
+        <Button>Add Domain</Button>
+      </DomainDialog>
+      <DomainsListView />
     </div>
   );
 };
