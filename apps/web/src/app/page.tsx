@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { DomainDialog } from "@/features/domains/components/domain-dialog";
 
 const HomePage = () => {
   return (
-    <div className="">
-      <Button>Here is a button</Button>
-      Here is the home page
+    <div>
+      <DomainDialog>
+        <Button>Add Domain</Button>
+      </DomainDialog>
     </div>
   );
 };
