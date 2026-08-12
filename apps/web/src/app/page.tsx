@@ -4,7 +4,7 @@ import { DomainsListView } from "@/features/domains/components/domains-list-view
 
 const HomePage = () => {
   return (
-    <div>
+    <div className="p-5">
       <DomainDialog>
         <Button>Add Domain</Button>
       </DomainDialog>

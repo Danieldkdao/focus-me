@@ -44,7 +44,7 @@ export const DomainForm = ({
   const router = useRouter();
   const form = useForm<DomainSchemaType>({
     resolver: zodResolver(domainSchema),
-    defaultValues: {
+    defaultValues: existingDomain ?? {
       domain: "",
       selfNote: "",
       subjectNote: "",
@@ -89,6 +89,7 @@ export const DomainForm = ({
                   id={fieldState.error && "invalid-domain-input"}
                   aria-invalid={!!fieldState.error}
                   placeholder="Enter a domain or url"
+                  className="pl-1!"
                   {...field}
                 />
               </InputGroup>
