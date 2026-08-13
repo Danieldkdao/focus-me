@@ -9,7 +9,7 @@ export const GET = async (request: NextRequest) => {
   const domains = await db.select().from(DomainTable);
 
   return NextResponse.json({
-    domains,
-    message: "Domains fetched successfully!",
+    data: domains,
+    error: false,
   });
 };

@@ -1,26 +1,36 @@
-import { useState } from "react";
-import { DialogContent, DialogTitle, Dialog, DialogHeader } from "./ui/dialog";
-import { Button } from "./ui/button";
+import { getDomains } from "@/features/domains/actions/actions";
+import { useQuery } from "@tanstack/react-query";
 import { XCircleIcon } from "lucide-react";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 export const BlockedDialog = ({
   portalContainer,
 }: {
   portalContainer: ShadowRoot;
 }) => {
-  const [allowedUrls] = useState<string[]>([
-    "mathacademy.com",
-    "www.google.com",
-    "github.com",
-  ]);
+  const { data } = useQuery({
+    queryKey: ["domains"],
+    queryFn: async () => {
+      const response = await getDomains();
 
-  const isAllowed = allowedUrls.some((domain) =>
-    window.location.href.startsWith(`https://${domain}`),
-  );
+      return response;
+    },
+  });
+
+  const match = data?.length
+    ? data.find((domain) => {
+        const currentHref = window.location.href;
+        const isMatch =
+          currentHref.startsWith(`https://www.${domain.domain}`) ||
+          currentHref.startsWith(`https://${domain.domain}`);
+        return isMatch && domain.status === "blocked";
+      })
+    : undefined;
 
   return (
     <Dialog
-      open={!isAllowed}
+      open={!!match}
       onOpenChange={(state) => {
         if (!state) return;
       }}
@@ -33,9 +43,7 @@ export const BlockedDialog = ({
           </DialogTitle>
         </DialogHeader>
         <p className="text-lg text-muted-foreground text-center">
-          This is not where you should be. Please go back to working on Math
-          Academy. {window.location.pathname} {window.location.href}{" "}
-          {window.location.hostname}
+          This is not where you should be. {match?.subjectNote}
         </p>
         <div className="flex flex-col md:flex-row md:items-center gap-2">
           <Button className="md:flex-1 w-full" variant="secondary">
