@@ -1,5 +1,5 @@
 import { fetcher } from "@/lib/utils";
-import { domainApiSchema } from "@focus-me/db";
+import { domainApiSchema } from "@focus-me/db/schema";
 import z from "zod";
 
 chrome.runtime.onMessage.addListener(
