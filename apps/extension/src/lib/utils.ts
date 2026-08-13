@@ -34,7 +34,6 @@ export const fetcher = async <T extends z.ZodType>(
 
       const unsafeData = await response.json();
       const result = responseSchema(dataSchema).safeParse(unsafeData);
-      console.log(JSON.stringify(unsafeData));
       if (!result.success) throw new Error("Invalid data.");
 
       const data = result.data;

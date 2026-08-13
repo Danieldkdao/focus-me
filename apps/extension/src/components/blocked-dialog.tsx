@@ -20,10 +20,10 @@ export const BlockedDialog = ({
 
   const match = data?.length
     ? data.find((domain) => {
-        const currentHref = window.location.href;
+        const hostname = window.location.hostname;
+        const blockedDomain = domain.domain.toLowerCase().replace(/\.$/, "");
         const isMatch =
-          currentHref.startsWith(`https://www.${domain.domain}`) ||
-          currentHref.startsWith(`https://${domain.domain}`);
+          hostname === blockedDomain || hostname.endsWith(`.${blockedDomain}`);
         return isMatch && domain.status === "blocked";
       })
     : undefined;
