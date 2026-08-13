@@ -11,7 +11,7 @@
     "storage"
   ],
   "host_permissions": [
-    "http://localhost:8000/*",
+    "http://localhost:3000/*",
     "https://api-prod-domain/*"
   ],
   "content_scripts": [
@@ -19,5 +19,15 @@
       "matches": ["<all_urls>"],
       "js": ["src/content/index.tsx"]
     }
-  ]
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/outfit-variable.woff2"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  }
 }

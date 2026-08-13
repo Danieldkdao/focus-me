@@ -1,6 +1,12 @@
 import { pgTable, text } from "drizzle-orm/pg-core";
-import { createdAt, id, updatedAt } from "../helpers.js";
-import { domainStatusEnum } from "../shared.js";
+import { createdAt, id, updatedAt } from "../helpers";
+import { domainStatusEnum } from "../shared";
+import {
+  createInsertSchema,
+  createUpdateSchema,
+  createSelectSchema,
+} from "drizzle-zod";
+import z from "zod";
 
 export const DomainTable = pgTable("domains", {
   id,
@@ -15,3 +21,12 @@ export const DomainTable = pgTable("domains", {
 
 export type DomainInsertType = typeof DomainTable.$inferInsert;
 export type DomainSelectType = typeof DomainTable.$inferSelect;
+
+export const domainInsertSchema = createInsertSchema(DomainTable);
+export const domainUpdateSchema = createUpdateSchema(DomainTable);
+export const domainSelectSchema = createSelectSchema(DomainTable);
+
+export const domainApiSchema = domainSelectSchema.extend({
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});

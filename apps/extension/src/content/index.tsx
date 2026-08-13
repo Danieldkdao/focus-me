@@ -1,7 +1,9 @@
 import ReactDOM from "react-dom/client";
 import cssText from "../index.css?inline";
-import outfitFontUrl from "@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?inline";
 import { BlockedDialog } from "@/components/blocked-dialog";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const outfitFontUrl = chrome.runtime.getURL("fonts/outfit-variable.woff2");
 
 const fontStyle = document.createElement("style");
 fontStyle.id = "focus-me-font";
@@ -46,6 +48,10 @@ reactContainer.id = "focus-me-react-root";
 
 shadowRoot.appendChild(reactContainer);
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(reactContainer).render(
-  <BlockedDialog portalContainer={shadowRoot} />,
+  <QueryClientProvider client={queryClient}>
+    <BlockedDialog portalContainer={shadowRoot} />
+  </QueryClientProvider>,
 );
