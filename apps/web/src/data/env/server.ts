@@ -4,6 +4,18 @@ import z from "zod";
 export const serverEnv = createEnv({
   server: {
     DATABASE_URL: z.string().min(1),
+    BETTER_AUTH_URL: z.url(),
+    BETTER_AUTH_SECRET: z.string().min(32),
+    EXTENSION_ORIGIN: z.string().startsWith("chrome-extension://"),
+    EXTENSION_ID: z.string().min(1),
+    EXTENSION_REDIRECT_URL: z.url(),
+    GOOGLE_CLIENT_ID: z.string().min(1),
+    GOOGLE_CLIENT_SECRET: z.string().min(1),
+    GITHUB_CLIENT_ID: z.string().min(1),
+    GITHUB_CLIENT_SECRET: z.string().min(1),
+    MAILJET_API_KEY: z.string().min(1),
+    MAILJET_API_SECRET: z.string().min(1),
+    SENDER_EMAIL: z.email().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,

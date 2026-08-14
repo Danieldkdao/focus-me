@@ -18,7 +18,8 @@
     "db:push": "pnpm --filter @focus-me/db db:push",
     "db:generate": "pnpm --filter @focus-me/db db:generate",
     "db:migrate": "pnpm --filter @focus-me/db db:migrate",
-    "db:studio": "pnpm --filter @focus-me/db db:studio"
+    "db:studio": "pnpm --filter @focus-me/db db:studio",
+    "db:auth": "pnpm --filter @focus-me/web db:auth"
   },
   "devDependencies": {
     "turbo": "latest"
