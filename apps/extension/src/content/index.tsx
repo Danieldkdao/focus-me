@@ -4,6 +4,7 @@ import { BlockedDialog } from "@/components/blocked-dialog";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const outfitFontUrl = chrome.runtime.getURL("fonts/outfit-variable.woff2");
+const frauncesFontUrl = chrome.runtime.getURL("fonts/fraunces-variable.woff2");
 
 const fontStyle = document.createElement("style");
 fontStyle.id = "focus-me-font";
@@ -15,6 +16,14 @@ fontStyle.textContent = `
     font-display: swap;
     font-weight: 100 900;
     src: url("${outfitFontUrl}") format("woff2");
+  }
+
+  @font-face {
+    font-family: "Fraunces Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("${frauncesFontUrl}") format("woff2-variations");
   }
 `;
 

@@ -18,11 +18,12 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth/auth-client";
-import { showToast } from "@/lib/utils";
+import { getSafeCallbackURL, showToast } from "@/lib/utils";
 import { GENERAL_ERROR_MESSAGE } from "@/lib/constants";
 import Link from "next/link";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { VerifyAccount } from "@/components/auth/verify-account";
+import { useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   email: z.email({ error: "Please enter a valid email." }),
@@ -42,6 +43,11 @@ const SignInPage = () => {
       password: "",
     },
   });
+  const searchParams = useSearchParams();
+
+  const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"));
+
+  const signUpHref = `/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`;
 
   useEffect(() => {
     if (session?.user && !session.user.emailVerified) {
@@ -57,10 +63,11 @@ const SignInPage = () => {
   const handleSignIn = async (data: FormType) => {
     await authClient.signIn.email({
       ...data,
-      callbackURL: "/dashboard",
+      callbackURL,
       fetchOptions: {
         onSuccess: async () => {
           showToast("success", "Authentication successful!");
+          window.location.assign(callbackURL);
         },
         onError: async (error) => {
           console.error(error);
@@ -83,7 +90,7 @@ const SignInPage = () => {
     setIsSocialSignIn(true);
     await authClient.signIn.social({
       provider,
-      callbackURL: "/dashboard",
+      callbackURL,
       fetchOptions: {
         onError: (error) => {
           setIsSocialSignIn(false);
@@ -96,7 +103,13 @@ const SignInPage = () => {
   const signInPending = form.formState.isSubmitting || isSocialSignIn;
 
   if (verifyEmail) {
-    return <VerifyAccount email={verifyEmail} setEmail={setVerifyEmail} />;
+    return (
+      <VerifyAccount
+        email={verifyEmail}
+        setEmail={setVerifyEmail}
+        callbackURL={callbackURL}
+      />
+    );
   }
 
   return (
@@ -108,7 +121,6 @@ const SignInPage = () => {
             Good to see you again! Enter your credentials to continue.
           </p>
         </div>
-
         <div className="flex flex-col gap-2 w-full">
           <Button
             variant="outline"
@@ -131,13 +143,11 @@ const SignInPage = () => {
             </LoadingSwap>
           </Button>
         </div>
-
         <div className="flex items-center gap-2 w-full">
           <Separator className="flex-1" />
           <span className="text-muted-foreground">Or continue with</span>
           <Separator className="flex-1" />
         </div>
-
         <form
           onSubmit={form.handleSubmit(handleSignIn)}
           className="w-full space-y-4"
@@ -191,7 +201,7 @@ const SignInPage = () => {
           </Button>
         </form>
         <Link
-          href="/sign-up"
+          href={signUpHref}
           className="text-sm font-medium text-muted-foreground"
         >
           Don&apos;t have an account? Click here to sign up.

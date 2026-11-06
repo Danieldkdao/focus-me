@@ -8,6 +8,7 @@ import {
 import { Suspense } from "react";
 import { readDomainsAction } from "../actions/actions";
 import { DomainTableRow } from "./domain-table-row";
+import { getCurrentUser } from "@/lib/auth/helpers";
 
 export const DomainsListView = () => {
   return (
@@ -23,23 +24,31 @@ const DomainsListViewLoading = () => {
 
 const DomainsListViewSuspense = async () => {
   const domains = await readDomainsAction();
+  const { user } = await getCurrentUser();
+  // todo: create error state component to take care of this
+  if (!domains) return null;
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Domain</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Self Note</TableHead>
-          <TableHead>Subject Note</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {domains.map((domain) => (
-          <DomainTableRow key={domain.id} domain={domain} />
-        ))}
-      </TableBody>
-    </Table>
+    <div>
+      <p>
+        Hello, {user?.name} - {user?.email}
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Domain</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Self Note</TableHead>
+            <TableHead>Subject Note</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {domains.map((domain) => (
+            <DomainTableRow key={domain.id} domain={domain} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

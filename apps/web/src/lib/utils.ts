@@ -13,3 +13,10 @@ export const showToast = (
 ) => {
   toast.add({ type, title, ...(toastOptions ?? {}) });
 };
+
+export const getSafeCallbackURL = (value: string | null) => {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/dashboard";
+  }
+  return value;
+};

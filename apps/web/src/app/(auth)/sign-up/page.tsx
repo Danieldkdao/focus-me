@@ -18,9 +18,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth/auth-client";
 import { GENERAL_ERROR_MESSAGE } from "@/lib/constants";
-import { showToast } from "@/lib/utils";
+import { getSafeCallbackURL, showToast } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaGithub, FaGoogle } from "react-icons/fa6";
@@ -45,11 +46,16 @@ const SignUpPage = () => {
       password: "",
     },
   });
+  const searchParams = useSearchParams();
+
+  const callbackURL = getSafeCallbackURL(searchParams.get("callbackURL"));
+
+  const signInHref = `/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`;
 
   const handleSignUp = async (data: FormType) => {
     await authClient.signUp.email({
       ...data,
-      callbackURL: "/dashboard",
+      callbackURL,
       fetchOptions: {
         onSuccess: async () => {
           showToast("success", "Account created successfully!");
@@ -66,7 +72,7 @@ const SignUpPage = () => {
     setIsSocialSignIn(true);
     await authClient.signIn.social({
       provider,
-      callbackURL: "/dashboard",
+      callbackURL,
       fetchOptions: {
         onError: (error) => {
           setIsSocialSignIn(false);
@@ -79,7 +85,13 @@ const SignUpPage = () => {
   const signUpPending = form.formState.isSubmitting || isSocialSignIn;
 
   if (verifyEmail) {
-    return <VerifyAccount email={verifyEmail} setEmail={setVerifyEmail} />;
+    return (
+      <VerifyAccount
+        email={verifyEmail}
+        setEmail={setVerifyEmail}
+        callbackURL={callbackURL}
+      />
+    );
   }
 
   return (
@@ -196,7 +208,7 @@ const SignUpPage = () => {
           </Button>
         </form>
         <Link
-          href="/sign-in"
+          href={signInHref}
           className="text-sm font-medium text-muted-foreground"
         >
           Already have an account? Click here to sign in.

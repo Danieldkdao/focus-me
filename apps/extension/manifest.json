@@ -8,7 +8,8 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "identity"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
@@ -22,7 +23,10 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/outfit-variable.woff2"],
+      "resources": [
+        "fonts/outfit-variable.woff2",
+        "fonts/fraunces-variable.woff2"
+      ],
       "matches": ["<all_urls>"]
     }
   ],

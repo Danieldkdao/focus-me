@@ -3,13 +3,21 @@ import { DomainInsertType, DomainSelectType, DomainTable } from "@focus-me/db";
 import { revalidateDomainCache } from "./cache/domains";
 import { SQLMap } from "@/lib/types";
 import { and, eq, SQL } from "drizzle-orm";
+import { getCurrentUser } from "@/lib/auth/helpers";
 
 export const confirmUserDomainOwnership = async (
   domainId: string,
   additionalFilters?: SQL<unknown>[],
 ) => {
+  const { userId } = await getCurrentUser();
+  if (!userId) return null;
+
   const existingDomain = await db.query.DomainTable.findFirst({
-    where: and(eq(DomainTable.id, domainId), ...(additionalFilters ?? [])),
+    where: and(
+      eq(DomainTable.id, domainId),
+      eq(DomainTable.userId, userId),
+      ...(additionalFilters ?? []),
+    ),
   });
 
   return existingDomain ?? null;
@@ -21,7 +29,7 @@ export const insertDomainDb = async (data: DomainInsertType) => {
     .values(data)
     .returning();
 
-  revalidateDomainCache();
+  revalidateDomainCache(insertedDomain.userId);
 
   return insertedDomain;
 };
@@ -30,24 +38,40 @@ export const updateDomainDb = async (
   domainId: string,
   data: Partial<SQLMap<DomainSelectType>>,
 ) => {
+  const existingDomain = await confirmUserDomainOwnership(domainId);
+  if (!existingDomain) return null;
+
   const [updatedDomain] = await db
     .update(DomainTable)
     .set(data)
-    .where(eq(DomainTable.id, domainId))
+    .where(
+      and(
+        eq(DomainTable.id, existingDomain.id),
+        eq(DomainTable.userId, existingDomain.userId),
+      ),
+    )
     .returning();
 
-  revalidateDomainCache();
+  revalidateDomainCache(updatedDomain.userId);
 
   return updatedDomain;
 };
 
 export const deleteDomainDb = async (domainId: string) => {
+  const existingDomain = await confirmUserDomainOwnership(domainId);
+  if (!existingDomain) return null;
+
   const [deletedDomain] = await db
     .delete(DomainTable)
-    .where(eq(DomainTable.id, domainId))
+    .where(
+      and(
+        eq(DomainTable.id, existingDomain.id),
+        eq(DomainTable.userId, existingDomain.userId),
+      ),
+    )
     .returning();
 
-  revalidateDomainCache();
+  revalidateDomainCache(deletedDomain.userId);
 
   return deletedDomain;
 };

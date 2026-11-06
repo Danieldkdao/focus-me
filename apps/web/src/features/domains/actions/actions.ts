@@ -1,38 +1,53 @@
 "use server";
 
+import { db } from "@/db/db";
+import { getCurrentUser } from "@/lib/auth/helpers";
 import {
   GENERAL_ERROR_MESSAGE,
   INVALID_DATA_ERROR_MESSAGE,
   NOT_FOUND_ERROR_MESSAGE,
+  UNAUTHED_ERROR_MESSAGE,
 } from "@/lib/constants";
-import { domainSchema, DomainSchemaType } from "./schemas";
+import { UnwrapAsync } from "@/lib/types";
+import { DomainTable } from "@focus-me/db";
+import { cacheTag } from "next/cache";
+import { getUserDomainTag } from "../server/cache/domains";
 import {
   confirmUserDomainOwnership,
   deleteDomainDb,
   insertDomainDb,
   updateDomainDb,
 } from "../server/domains";
-import { UnwrapAsync } from "@/lib/types";
-import { db } from "@/db/db";
-import { DomainTable } from "@focus-me/db";
-import { cacheTag } from "next/cache";
-import { getGlobalDomainTag } from "../server/cache/domains";
+import { domainSchema, DomainSchemaType } from "./schemas";
+import { eq } from "drizzle-orm";
 
-const readCachedDomainsAction = async () => {
+const readCachedDomainsAction = async (userId: string) => {
   "use cache";
-  // todo: user scope this later
-  cacheTag(getGlobalDomainTag());
-  const domains = await db.select().from(DomainTable);
+  cacheTag(getUserDomainTag(userId));
+  const domains = await db
+    .select()
+    .from(DomainTable)
+    .where(eq(DomainTable.userId, userId));
 
   return domains;
 };
 export const readDomainsAction = async () => {
-  // todo: add authentication
-  return readCachedDomainsAction();
+  const { userId } = await getCurrentUser();
+  if (!userId) return null;
+
+  return readCachedDomainsAction(userId);
 };
 export type ReadDomainsActionRes = UnwrapAsync<typeof readDomainsAction>;
 
 export const createDomainAction = async (unsafeData: DomainSchemaType) => {
+  const { userId } = await getCurrentUser();
+  if (!userId) {
+    return {
+      error: true,
+      message: UNAUTHED_ERROR_MESSAGE,
+    };
+  }
+
   const { success, data } = domainSchema.safeParse(unsafeData);
   if (!success) {
     return {
@@ -42,7 +57,7 @@ export const createDomainAction = async (unsafeData: DomainSchemaType) => {
   }
 
   try {
-    const insertedDomain = await insertDomainDb(data);
+    const insertedDomain = await insertDomainDb({ ...data, userId });
     if (!insertedDomain) throw new Error("Failed to create add new domain.");
 
     return {
@@ -62,6 +77,14 @@ export const updateDomainAction = async (
   domainId: string,
   unsafeData: DomainSchemaType,
 ) => {
+  const { userId } = await getCurrentUser();
+  if (!userId) {
+    return {
+      error: true,
+      message: UNAUTHED_ERROR_MESSAGE,
+    };
+  }
+
   const existingDomain = await confirmUserDomainOwnership(domainId);
   if (!existingDomain) {
     return {
@@ -96,6 +119,14 @@ export const updateDomainAction = async (
 };
 
 export const deleteDomainAction = async (domainId: string) => {
+  const { userId } = await getCurrentUser();
+  if (!userId) {
+    return {
+      error: true,
+      message: UNAUTHED_ERROR_MESSAGE,
+    };
+  }
+
   const existingDomain = await confirmUserDomainOwnership(domainId);
   if (!existingDomain) {
     return {
